@@ -1,15 +1,14 @@
 package com.office.employeemanagement.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Сущность, описывающая структуру таблицы сотрудников в базе данных.
+ */
 @Entity
 @Table(name = "employees")
 @Getter
@@ -17,12 +16,16 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Employee {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String firstName;
+
     private String lastName;
+
     private String position;
+
     private Double salary;
 }

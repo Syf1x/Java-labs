@@ -3,11 +3,20 @@ package com.office.employeemanagement.mapper;
 import com.office.employeemanagement.dto.EmployeeDto;
 import com.office.employeemanagement.model.Employee;
 
+/**
+ * Класс для преобразования (маппинга) сущностей в DTO и обратно.
+ */
 public final class EmployeeMapper {
 
     private EmployeeMapper() {
     }
 
+    /**
+     * Преобразование сущности Employee в объект EmployeeDto.
+     *
+     * @param employee сущность из базы данных.
+     * @return объект для передачи данных.
+     */
     public static EmployeeDto toDto(Employee employee) {
         EmployeeDto dto = new EmployeeDto();
         dto.setId(employee.getId());
