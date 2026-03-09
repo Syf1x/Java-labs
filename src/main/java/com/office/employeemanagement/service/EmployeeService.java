@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class EmployeeService {
-    // Временное хранилище в памяти вместо БД
     private final List<Employee> employees = new ArrayList<>();
     private Long nextId = 1L;
 

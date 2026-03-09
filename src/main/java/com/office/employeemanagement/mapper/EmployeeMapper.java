@@ -4,10 +4,12 @@ import com.office.employeemanagement.dto.EmployeeDto;
 import com.office.employeemanagement.model.Employee;
 
 public final class EmployeeMapper {
-    private EmployeeMapper() {}
+    private EmployeeMapper() { }
 
     public static EmployeeDto toDto(Employee employee) {
-        if (employee == null) return null;
+        if (employee == null) {
+            return null;
+        }
         EmployeeDto dto = new EmployeeDto();
         dto.setId(employee.getId());
         dto.setFirstName(employee.getFirstName());
@@ -15,9 +17,10 @@ public final class EmployeeMapper {
         return dto;
     }
 
-    // Добавь этот метод, его сейчас не хватает!
     public static Employee toEntity(EmployeeDto dto) {
-        if (dto == null) return null;
+        if (dto == null) {
+            return null;
+        }
         Employee employee = new Employee();
         employee.setFirstName(dto.getFirstName());
         employee.setLastName(dto.getLastName());
