@@ -24,6 +24,6 @@ public class EmployeeService {
     public List<EmployeeDto> getAllEmployees() {
         return employees.stream()
                 .map(EmployeeMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 }
