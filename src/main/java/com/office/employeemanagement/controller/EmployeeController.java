@@ -2,25 +2,17 @@ package com.office.employeemanagement.controller;
 
 import com.office.employeemanagement.dto.EmployeeDto;
 import com.office.employeemanagement.service.EmployeeService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/employees")
+@RequiredArgsConstructor
 public class EmployeeController {
 
     private final EmployeeService employeeService;
-
-    public EmployeeController(EmployeeService employeeService) {
-        this.employeeService = employeeService;
-    }
 
     @PostMapping
     public EmployeeDto create(@RequestBody EmployeeDto dto) {
@@ -28,12 +20,22 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public List<EmployeeDto> findAll(@RequestParam(required = false) String category) {
-        return employeeService.getAllEmployees(category);
+    public List<EmployeeDto> findAll() {
+        return employeeService.getAllEmployees();
     }
 
     @GetMapping("/{id}")
     public EmployeeDto findById(@PathVariable Long id) {
         return employeeService.getEmployeeById(id);
+    }
+
+    @PostMapping("/test-transaction")
+    public void testTransaction(@RequestBody EmployeeDto dto) {
+        employeeService.saveWithTransactionCheck(dto);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        employeeService.deleteEmployee(id);
     }
 }

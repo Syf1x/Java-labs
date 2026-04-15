@@ -2,40 +2,68 @@ package com.office.employeemanagement.service;
 
 import com.office.employeemanagement.dto.EmployeeDto;
 import com.office.employeemanagement.mapper.EmployeeMapper;
+import com.office.employeemanagement.model.Department;
 import com.office.employeemanagement.model.Employee;
+import com.office.employeemanagement.model.EmployeeProfile;
 import com.office.employeemanagement.repository.EmployeeRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class EmployeeService {
-    private final EmployeeRepository repository;
 
-    public EmployeeService(EmployeeRepository repository) {
-        this.repository = repository;
-    }
+    private final EmployeeRepository employeeRepository;
 
+    @Transactional
     public EmployeeDto createEmployee(EmployeeDto dto) {
         Employee employee = EmployeeMapper.toEntity(dto);
-        return EmployeeMapper.toDto(repository.save(employee));
+
+        if (dto.getBio() != null) {
+            EmployeeProfile profile = new EmployeeProfile();
+            profile.setBio(dto.getBio());
+            employee.setProfile(profile);
+        }
+
+        Employee savedEmployee = employeeRepository.save(employee);
+        return EmployeeMapper.toDto(savedEmployee);
     }
 
-    public List<EmployeeDto> getAllEmployees(String category) {
-        List<Employee> all = repository.findAll();
-
-        return all.stream()
-                .filter(e -> category == null || (e.getCategory() != null
-                        && e.getCategory().equalsIgnoreCase(category)))
-                .sorted(Comparator.comparing(Employee::getId))
+    @Transactional(readOnly = true)
+    public List<EmployeeDto> getAllEmployees() {
+        return employeeRepository.findAll().stream()
                 .map(EmployeeMapper::toDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public EmployeeDto getEmployeeById(Long id) {
-        return repository.findById(id)
+        return employeeRepository.findById(id)
                 .map(EmployeeMapper::toDto)
                 .orElse(null);
+    }
+
+    @Transactional
+    public void deleteEmployee(Long id) {
+        employeeRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void saveWithTransactionCheck(EmployeeDto dto) {
+        Employee emp = EmployeeMapper.toEntity(dto);
+        employeeRepository.save(emp);
+
+        if ("error".equalsIgnoreCase(dto.getFirstName())) {
+            throw new RuntimeException("Rollback triggered: Данные не будут сохранены в БД");
+        }
+
+        Employee secondEmp = new Employee();
+        secondEmp.setFirstName("System");
+        secondEmp.setLastName("User");
+        employeeRepository.save(secondEmp);
     }
 }

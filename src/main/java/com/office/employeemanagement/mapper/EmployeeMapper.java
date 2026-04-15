@@ -14,7 +14,15 @@ public final class EmployeeMapper {
         dto.setId(employee.getId());
         dto.setFirstName(employee.getFirstName());
         dto.setLastName(employee.getLastName());
-        dto.setCategory(employee.getCategory());
+
+        if (employee.getDepartment() != null) {
+            dto.setDepartmentName(employee.getDepartment().getName());
+        }
+
+        if (employee.getProfile() != null) {
+            dto.setBio(employee.getProfile().getBio());
+        }
+
         return dto;
     }
 
@@ -25,7 +33,6 @@ public final class EmployeeMapper {
         Employee employee = new Employee();
         employee.setFirstName(dto.getFirstName());
         employee.setLastName(dto.getLastName());
-        employee.setCategory(dto.getCategory());
         return employee;
     }
 }
