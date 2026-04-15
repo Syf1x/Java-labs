@@ -2,16 +2,15 @@ package com.office.employeemanagement.service;
 
 import com.office.employeemanagement.dto.EmployeeDto;
 import com.office.employeemanagement.mapper.EmployeeMapper;
-import com.office.employeemanagement.model.Department;
 import com.office.employeemanagement.model.Employee;
 import com.office.employeemanagement.model.EmployeeProfile;
 import com.office.employeemanagement.repository.EmployeeRepository;
+import com.office.employeemanagement.exception.TransactionTestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +36,7 @@ public class EmployeeService {
     public List<EmployeeDto> getAllEmployees() {
         return employeeRepository.findAll().stream()
                 .map(EmployeeMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -58,7 +57,7 @@ public class EmployeeService {
         employeeRepository.save(emp);
 
         if ("error".equalsIgnoreCase(dto.getFirstName())) {
-            throw new RuntimeException("Rollback triggered: Данные не будут сохранены в БД");
+            throw new TransactionTestException("Rollback triggered: Данные не будут сохранены в БД");
         }
 
         Employee secondEmp = new Employee();
