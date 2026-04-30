@@ -1,13 +1,27 @@
 package com.office.employeemanagement.model;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import java.util.List;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Set;
 
 @Entity
 @Table(name = "employees")
-@Getter @Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,19 +30,19 @@ public class Employee {
     private String firstName;
     private String lastName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "department_id")
-    private Department department;
-
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "profile_id")
     private EmployeeProfile profile;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
+
+    @ManyToMany
     @JoinTable(
-            name = "employee_projects",
+            name = "employee_tasks",
             joinColumns = @JoinColumn(name = "employee_id"),
-            inverseJoinColumns = @JoinColumn(name = "project_id")
+            inverseJoinColumns = @JoinColumn(name = "task_id")
     )
-    private List<Project> projects;
+    private Set<Task> tasks;
 }

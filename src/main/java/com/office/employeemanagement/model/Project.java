@@ -1,23 +1,30 @@
 package com.office.employeemanagement.model;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
 @Entity
 @Table(name = "projects")
-@Getter @Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String projectName;
+    private String name;
+    private String description;
 
-    @ManyToMany(mappedBy = "projects")
-    private List<Employee> employees;
-
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "project")
     private List<Task> tasks;
 }

@@ -3,7 +3,13 @@ package com.office.employeemanagement.controller;
 import com.office.employeemanagement.dto.EmployeeDto;
 import com.office.employeemanagement.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -20,22 +26,22 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public List<EmployeeDto> findAll() {
+    public List<EmployeeDto> getAll() {
         return employeeService.getAllEmployees();
     }
 
     @GetMapping("/{id}")
-    public EmployeeDto findById(@PathVariable Long id) {
+    public EmployeeDto getEmployeeById(@PathVariable Long id) {
         return employeeService.getEmployeeById(id);
     }
 
     @PostMapping("/test-transaction")
-    public void testTransaction(@RequestBody EmployeeDto dto) {
-        employeeService.saveWithTransactionCheck(dto);
+    public EmployeeDto saveWithTransactionCheck(@RequestBody EmployeeDto dto) {
+        return employeeService.saveWithTransactionCheck(dto);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public void deleteEmployee(@PathVariable Long id) {
         employeeService.deleteEmployee(id);
     }
 }

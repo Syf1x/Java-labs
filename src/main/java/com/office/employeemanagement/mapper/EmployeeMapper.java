@@ -2,37 +2,36 @@ package com.office.employeemanagement.mapper;
 
 import com.office.employeemanagement.dto.EmployeeDto;
 import com.office.employeemanagement.model.Employee;
+import com.office.employeemanagement.model.Task;
+import java.util.stream.Collectors;
 
-public final class EmployeeMapper {
-    private EmployeeMapper() { }
+public class EmployeeMapper {
 
-    public static EmployeeDto toDto(Employee employee) {
-        if (employee == null) {
+    public static EmployeeDto toDto(Employee entity) {
+        if (entity == null) {
             return null;
         }
-        EmployeeDto dto = new EmployeeDto();
-        dto.setId(employee.getId());
-        dto.setFirstName(employee.getFirstName());
-        dto.setLastName(employee.getLastName());
 
-        if (employee.getDepartment() != null) {
-            dto.setDepartmentName(employee.getDepartment().getName());
+        EmployeeDto dto = new EmployeeDto();
+        dto.setId(entity.getId());
+        dto.setFirstName(entity.getFirstName());
+        dto.setLastName(entity.getLastName());
+
+        if (entity.getProfile() != null) {
+            dto.setBio(entity.getProfile().getBio());
         }
 
-        if (employee.getProfile() != null) {
-            dto.setBio(employee.getProfile().getBio());
+        if (entity.getDepartment() != null) {
+            dto.setDepartmentId(entity.getDepartment().getId());
+            dto.setDepartmentName(entity.getDepartment().getName());
+        }
+
+        if (entity.getTasks() != null) {
+            dto.setTaskIds(entity.getTasks().stream()
+                    .map(Task::getId)
+                    .collect(Collectors.toList()));
         }
 
         return dto;
-    }
-
-    public static Employee toEntity(EmployeeDto dto) {
-        if (dto == null) {
-            return null;
-        }
-        Employee employee = new Employee();
-        employee.setFirstName(dto.getFirstName());
-        employee.setLastName(dto.getLastName());
-        return employee;
     }
 }
