@@ -7,6 +7,10 @@ import java.util.stream.Collectors;
 
 public class EmployeeMapper {
 
+    private EmployeeMapper() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static EmployeeDto toDto(Employee entity) {
         if (entity == null) {
             return null;
