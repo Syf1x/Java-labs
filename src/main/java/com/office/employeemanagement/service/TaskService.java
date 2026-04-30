@@ -20,7 +20,6 @@ public class TaskService {
         Task task = new Task();
         task.setTitle(dto.title());
         task.setDescription(dto.description());
-        // Если статус не передан, ставим TODO по умолчанию
         task.setStatus(dto.status() != null ? dto.status() : TaskStatus.TODO);
 
         if (dto.projectId() != null) {
