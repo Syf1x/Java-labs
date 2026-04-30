@@ -2,6 +2,7 @@ package com.office.employeemanagement.service;
 
 import com.office.employeemanagement.dto.TaskDto;
 import com.office.employeemanagement.model.Task;
+import com.office.employeemanagement.model.TaskStatus;
 import com.office.employeemanagement.repository.ProjectRepository;
 import com.office.employeemanagement.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +20,20 @@ public class TaskService {
         Task task = new Task();
         task.setTitle(dto.title());
         task.setDescription(dto.description());
+        // Если статус не передан, ставим TODO по умолчанию
+        task.setStatus(dto.status() != null ? dto.status() : TaskStatus.TODO);
+
         if (dto.projectId() != null) {
             projectRepository.findById(dto.projectId()).ifPresent(task::setProject);
         }
+
         Task saved = taskRepository.save(task);
-        return new TaskDto(saved.getId(), saved.getTitle(), saved.getDescription(),
-                saved.getProject() != null ? saved.getProject().getId() : null);
+        return new TaskDto(
+                saved.getId(),
+                saved.getTitle(),
+                saved.getDescription(),
+                saved.getStatus(),
+                saved.getProject() != null ? saved.getProject().getId() : null
+        );
     }
 }

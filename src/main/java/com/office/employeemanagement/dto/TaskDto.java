@@ -1,5 +1,11 @@
 package com.office.employeemanagement.dto;
 
-public record TaskDto(Long id, String title, String description, Long projectId) {
+import com.office.employeemanagement.model.TaskStatus;
 
-}
+public record TaskDto(
+        Long id,
+        String title,
+        String description,
+        TaskStatus status,
+        Long projectId
+) { }
