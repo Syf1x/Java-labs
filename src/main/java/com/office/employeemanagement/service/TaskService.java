@@ -9,11 +9,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class TaskService {
     private final TaskRepository taskRepository;
     private final ProjectRepository projectRepository;
+
+    @Transactional(readOnly = true)
+    public List<TaskDto> getAll() {
+        return taskRepository.findAll().stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
 
     @Transactional
     public TaskDto create(TaskDto dto) {
@@ -26,13 +36,16 @@ public class TaskService {
             projectRepository.findById(dto.projectId()).ifPresent(task::setProject);
         }
 
-        Task saved = taskRepository.save(task);
+        return convertToDto(taskRepository.save(task));
+    }
+
+    private TaskDto convertToDto(Task task) {
         return new TaskDto(
-                saved.getId(),
-                saved.getTitle(),
-                saved.getDescription(),
-                saved.getStatus(),
-                saved.getProject() != null ? saved.getProject().getId() : null
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getStatus(),
+                task.getProject() != null ? task.getProject().getId() : null
         );
     }
 }
