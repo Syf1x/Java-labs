@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/api/v1/employees")
@@ -31,8 +33,8 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public EmployeeDto create(@RequestBody EmployeeDto dto) {
-        return employeeService.create(dto);
+    public ResponseEntity<EmployeeDto> create(@Valid @RequestBody EmployeeDto dto) {
+        return ResponseEntity.ok(employeeService.create(dto));
     }
 
     @PutMapping("/{id}")
