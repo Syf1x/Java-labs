@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <checkstyle version="9.3">
-<file name="C:\Users\Redmi\IdeaProjects\employee-management\src\main\java\com\office\employeemanagement\controller\DepartmentController.java">
-</file>
-<file name="C:\Users\Redmi\IdeaProjects\employee-management\src\main\java\com\office\employeemanagement\controller\ProjectController.java">
-</file>
-<file name="C:\Users\Redmi\IdeaProjects\employee-management\src\main\java\com\office\employeemanagement\dto\ProjectDto.java">
-</file>
-<file name="C:\Users\Redmi\IdeaProjects\employee-management\src\main\java\com\office\employeemanagement\service\DepartmentService.java">
+<file name="C:\Users\Redmi\IdeaProjects\employee-management\src\main\java\com\office\employeemanagement\model\Task.java">
 </file>
 </checkstyle>
