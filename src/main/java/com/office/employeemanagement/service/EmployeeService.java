@@ -3,6 +3,7 @@ package com.office.employeemanagement.service;
 import com.office.employeemanagement.dto.EmployeeDto;
 import com.office.employeemanagement.dto.SearchKey;
 import com.office.employeemanagement.exception.ResourceNotFoundException;
+import com.office.employeemanagement.exception.TransactionTestException;
 import com.office.employeemanagement.model.Employee;
 import com.office.employeemanagement.model.EmployeeProfile;
 import com.office.employeemanagement.model.Task;
@@ -17,9 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -57,18 +58,18 @@ public class EmployeeService {
     @Transactional
     public EmployeeDto create(EmployeeDto dto) {
         invalidateCache();
-        Employee employee = new Employee();
-        employee.setFirstName(dto.firstName());
-        employee.setLastName(dto.lastName());
-        EmployeeProfile profile = new EmployeeProfile();
-        profile.setBio(dto.bio());
-        profile.setPhoneNumber(dto.phoneNumber());
-        profile.setEmployee(employee);
-        employee.setProfile(profile);
-        if (dto.departmentId() != null) {
-            departmentRepository.findById(dto.departmentId()).ifPresent(employee::setDepartment);
-        }
-        return convertToDto(employeeRepository.save(employee));
+        return convertToDto(employeeRepository.save(buildEmployee(dto)));
+    }
+
+    @Transactional
+    public List<EmployeeDto> createBulk(List<EmployeeDto> dtos) {
+        invalidateCache();
+        log.info("Bulk-создание {} сотрудников", dtos.size());
+        return dtos.stream()
+                .map(this::buildEmployee)
+                .map(employeeRepository::save)
+                .map(this::convertToDto)
+                .toList();
     }
 
     @Transactional
@@ -100,13 +101,38 @@ public class EmployeeService {
         employeeRepository.deleteById(id);
     }
 
-    @Transactional
     public void createPartialWrite(EmployeeDto dto) {
         Employee employee = new Employee();
         employee.setFirstName(dto.firstName());
         employee.setLastName(dto.lastName());
         employeeRepository.save(employee);
-        throw new RuntimeException("Искусственная ошибка для проверки частичной записи");
+        throw new RuntimeException("Искусственная ошибка для проверки частичной записи: "
+                + "метод без @Transactional, сохранённая запись останется в БД");
+    }
+
+    @Transactional
+    public void createBulkTransactional(List<EmployeeDto> dtos) {
+        log.info("Транзакционное bulk-создание {} сотрудников с искусственной ошибкой в конце", dtos.size());
+        for (EmployeeDto dto : dtos) {
+            employeeRepository.save(buildEmployee(dto));
+        }
+        throw new TransactionTestException("Искусственная ошибка после сохранения " + dtos.size()
+                + " сотрудников: метод с @Transactional, все изменения будут отменены");
+    }
+
+    private Employee buildEmployee(EmployeeDto dto) {
+        Employee employee = new Employee();
+        employee.setFirstName(dto.firstName());
+        employee.setLastName(dto.lastName());
+        EmployeeProfile profile = new EmployeeProfile();
+        profile.setBio(dto.bio());
+        profile.setPhoneNumber(dto.phoneNumber());
+        profile.setEmployee(employee);
+        employee.setProfile(profile);
+        Optional.ofNullable(dto.departmentId())
+                .flatMap(departmentRepository::findById)
+                .ifPresent(employee::setDepartment);
+        return employee;
     }
 
     private void invalidateCache() {

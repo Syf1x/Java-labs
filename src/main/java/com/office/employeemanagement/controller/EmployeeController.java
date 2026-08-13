@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/employees")
 @RequiredArgsConstructor
@@ -40,16 +42,30 @@ public class EmployeeController {
         return employeeService.getFilteredEmployeesNative(dept, name, pageable);
     }
 
-    @Operation(summary = "Демонстрация partial write без @Transactional: сотрудник сохраняется, затем бросается исключение")
+    @Operation(summary = "Демонстрация partial write без @Transactional: сотрудник сохраняется, "
+            + "затем бросается исключение, запись остаётся в БД")
     @PostMapping("/test-partial")
     public void testPartial(@Valid @RequestBody EmployeeDto dto) {
         employeeService.createPartialWrite(dto);
+    }
+
+    @Operation(summary = "Демонстрация rollback с @Transactional: сохраняется список сотрудников, "
+            + "затем бросается исключение, все записи откатываются")
+    @PostMapping("/test-bulk-transactional")
+    public void testBulkTransactional(@Valid @RequestBody List<EmployeeDto> dtos) {
+        employeeService.createBulkTransactional(dtos);
     }
 
     @Operation(summary = "Создать сотрудника")
     @PostMapping
     public EmployeeDto create(@Valid @RequestBody EmployeeDto dto) {
         return employeeService.create(dto);
+    }
+
+    @Operation(summary = "Массово создать сотрудников одним запросом")
+    @PostMapping("/bulk")
+    public List<EmployeeDto> createBulk(@Valid @RequestBody List<EmployeeDto> dtos) {
+        return employeeService.createBulk(dtos);
     }
 
     @Operation(summary = "Обновить сотрудника")

@@ -34,7 +34,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
             AND (:lastName IS NULL OR e.lastName LIKE %:lastName%)
         """, countQuery = """
             SELECT count(e) FROM Employee e
-            WHERE (:deptName IS NULL OR e.department.name LIKE %:deptName%)
+            LEFT JOIN e.department d
+            WHERE (:deptName IS NULL OR d.name LIKE %:deptName%)
             AND (:lastName IS NULL OR e.lastName LIKE %:lastName%)
         """)
     Page<Employee> findAllWithPagination(
