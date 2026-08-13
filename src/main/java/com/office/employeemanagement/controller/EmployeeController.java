@@ -2,6 +2,8 @@ package com.office.employeemanagement.controller;
 
 import com.office.employeemanagement.dto.EmployeeDto;
 import com.office.employeemanagement.service.EmployeeService;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,24 +24,41 @@ public class EmployeeController {
 
     private final EmployeeService employeeService;
 
-    @GetMapping("/search")
-    public Page<EmployeeDto> search(
-            @RequestParam(required = false) String dept,
-            @RequestParam(required = false) String name,
-            Pageable pageable) {
+    @Operation(summary = "Получить сотрудников с фильтрацией по департаменту/фамилии и пагинацией")
+    @GetMapping
+    public Page<EmployeeDto> getEmployees(@RequestParam(required = false) String dept,
+                                          @RequestParam(required = false) String name,
+                                          Pageable pageable) {
         return employeeService.getFilteredEmployees(dept, name, pageable);
     }
 
+    @Operation(summary = "То же самое, но через native SQL запрос вместо JPQL")
+    @GetMapping("/native")
+    public Page<EmployeeDto> getEmployeesNative(@RequestParam(required = false) String dept,
+                                                @RequestParam(required = false) String name,
+                                                Pageable pageable) {
+        return employeeService.getFilteredEmployeesNative(dept, name, pageable);
+    }
+
+    @Operation(summary = "Демонстрация partial write без @Transactional: сотрудник сохраняется, затем бросается исключение")
+    @PostMapping("/test-partial")
+    public void testPartial(@Valid @RequestBody EmployeeDto dto) {
+        employeeService.createPartialWrite(dto);
+    }
+
+    @Operation(summary = "Создать сотрудника")
     @PostMapping
-    public EmployeeDto create(@RequestBody EmployeeDto dto) {
+    public EmployeeDto create(@Valid @RequestBody EmployeeDto dto) {
         return employeeService.create(dto);
     }
 
+    @Operation(summary = "Обновить сотрудника")
     @PutMapping("/{id}")
-    public EmployeeDto update(@PathVariable Long id, @RequestBody EmployeeDto dto) {
+    public EmployeeDto update(@PathVariable Long id, @Valid @RequestBody EmployeeDto dto) {
         return employeeService.update(id, dto);
     }
 
+    @Operation(summary = "Удалить сотрудника")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         employeeService.delete(id);

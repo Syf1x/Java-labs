@@ -1,27 +1,30 @@
 package com.office.employeemanagement.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Column;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "employee_profiles")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Schema(description = "Профиль сотрудника")
+@Getter
+@Setter
 public class EmployeeProfile {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String bio;
 
-    @Column(length = 15) // Ограничение согласно международному стандарту
     private String phoneNumber;
+
+    @OneToOne(mappedBy = "profile")
+    private Employee employee;
 }

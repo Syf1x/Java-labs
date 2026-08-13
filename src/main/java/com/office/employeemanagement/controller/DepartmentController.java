@@ -2,6 +2,8 @@ package com.office.employeemanagement.controller;
 
 import com.office.employeemanagement.model.Department;
 import com.office.employeemanagement.service.DepartmentService;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,21 +22,25 @@ import java.util.List;
 public class DepartmentController {
     private final DepartmentService departmentService;
 
+    @Operation(summary = "Получить все департаменты")
     @GetMapping
     public List<Department> getAll() {
         return departmentService.getAll();
     }
 
+    @Operation(summary = "Создать департамент")
     @PostMapping
-    public Department create(@RequestBody Department department) {
+    public Department create(@Valid @RequestBody Department department) {
         return departmentService.create(department);
     }
 
+    @Operation(summary = "Обновить департамент")
     @PutMapping("/{id}")
-    public Department update(@PathVariable Long id, @RequestBody Department department) {
+    public Department update(@PathVariable Long id, @Valid @RequestBody Department department) {
         return departmentService.update(id, department);
     }
 
+    @Operation(summary = "Удалить департамент")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         departmentService.delete(id);

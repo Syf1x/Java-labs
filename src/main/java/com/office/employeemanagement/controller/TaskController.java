@@ -2,6 +2,8 @@ package com.office.employeemanagement.controller;
 
 import com.office.employeemanagement.dto.TaskDto;
 import com.office.employeemanagement.service.TaskService;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,26 +22,31 @@ import java.util.List;
 public class TaskController {
     private final TaskService taskService;
 
+    @Operation(summary = "Получить все задачи")
     @GetMapping
     public List<TaskDto> getAll() {
         return taskService.getAll();
     }
 
+    @Operation(summary = "Получить задачу по ID")
     @GetMapping("/{id}")
     public TaskDto getById(@PathVariable Long id) {
         return taskService.getById(id);
     }
 
+    @Operation(summary = "Создать задачу")
     @PostMapping
-    public TaskDto create(@RequestBody TaskDto dto) {
+    public TaskDto create(@Valid @RequestBody TaskDto dto) {
         return taskService.create(dto);
     }
 
+    @Operation(summary = "Обновить задачу")
     @PutMapping("/{id}")
-    public TaskDto update(@PathVariable Long id, @RequestBody TaskDto dto) {
+    public TaskDto update(@PathVariable Long id, @Valid @RequestBody TaskDto dto) {
         return taskService.update(id, dto);
     }
 
+    @Operation(summary = "Удалить задачу")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         taskService.delete(id);

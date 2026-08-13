@@ -1,6 +1,7 @@
 package com.office.employeemanagement.service;
 
 import com.office.employeemanagement.dto.TaskDto;
+import com.office.employeemanagement.exception.ResourceNotFoundException;
 import com.office.employeemanagement.model.Task;
 import com.office.employeemanagement.model.TaskStatus;
 import com.office.employeemanagement.repository.ProjectRepository;
@@ -27,7 +28,7 @@ public class TaskService {
     @Transactional(readOnly = true)
     public TaskDto getById(Long id) {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found: " + id));
         return convertToDto(task);
     }
 
@@ -41,7 +42,7 @@ public class TaskService {
     @Transactional
     public TaskDto update(Long id, TaskDto dto) {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found: " + id));
         updateTaskFromDto(task, dto);
         return convertToDto(task);
     }
@@ -49,7 +50,7 @@ public class TaskService {
     @Transactional
     public void delete(Long id) {
         if (!taskRepository.existsById(id)) {
-            throw new RuntimeException("Task not found");
+            throw new ResourceNotFoundException("Task not found: " + id);
         }
 
         taskRepository.deleteFromEmployeeTasks(id);

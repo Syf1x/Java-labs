@@ -1,6 +1,7 @@
 package com.office.employeemanagement.service;
 
 import com.office.employeemanagement.dto.ProjectDto;
+import com.office.employeemanagement.exception.ResourceNotFoundException;
 import com.office.employeemanagement.model.Project;
 import com.office.employeemanagement.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class ProjectService {
     @Transactional(readOnly = true)
     public ProjectDto getById(Long id) {
         Project p = projectRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found: " + id));
         return new ProjectDto(p.getId(), p.getName(), p.getDescription());
     }
 
@@ -40,7 +41,7 @@ public class ProjectService {
     @Transactional
     public ProjectDto update(Long id, ProjectDto dto) {
         Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found: " + id));
         project.setName(dto.name());
         project.setDescription(dto.description());
         return new ProjectDto(project.getId(), project.getName(), project.getDescription());

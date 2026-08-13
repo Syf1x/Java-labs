@@ -1,5 +1,6 @@
 package com.office.employeemanagement.service;
 
+import com.office.employeemanagement.exception.ResourceNotFoundException;
 import com.office.employeemanagement.model.Department;
 import com.office.employeemanagement.repository.DepartmentRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class DepartmentService {
     @Transactional
     public Department update(Long id, Department details) {
         Department dep = departmentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Department not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Department not found: " + id));
         dep.setName(details.getName());
         return dep;
     }

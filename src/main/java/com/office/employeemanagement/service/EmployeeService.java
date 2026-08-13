@@ -2,6 +2,7 @@ package com.office.employeemanagement.service;
 
 import com.office.employeemanagement.dto.EmployeeDto;
 import com.office.employeemanagement.dto.SearchKey;
+import com.office.employeemanagement.exception.ResourceNotFoundException;
 import com.office.employeemanagement.model.Employee;
 import com.office.employeemanagement.model.EmployeeProfile;
 import com.office.employeemanagement.model.Task;
@@ -36,40 +37,37 @@ public class EmployeeService {
     @Transactional(readOnly = true)
     public Page<EmployeeDto> getFilteredEmployees(String dept, String name, Pageable pageable) {
         SearchKey key = new SearchKey(dept, name, pageable.getPageNumber(), pageable.getPageSize());
-
         if (cache.containsKey(key)) {
             log.info("Данные получены из кэша для ключа: {}", key);
             return cache.get(key);
         }
-
         log.info("Кэш пуст. Выполнение запроса к БД для ключа: {}", key);
-
-        Page<EmployeeDto> result = employeeRepository.findByFilter(dept, name, pageable)
+        Page<EmployeeDto> result = employeeRepository.findAllWithPagination(dept, name, pageable)
                 .map(this::convertToDto);
-
         cache.put(key, result);
         return result;
     }
 
     @Transactional(readOnly = true)
-    public List<EmployeeDto> getAll() {
-        return employeeRepository.findAll().stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public EmployeeDto getById(Long id) {
-        return employeeRepository.findById(id)
-                .map(this::convertToDto)
-                .orElseThrow(() -> new RuntimeException("Сотрудник не найден с ID: " + id));
+    public Page<EmployeeDto> getFilteredEmployeesNative(String dept, String name, Pageable pageable) {
+        return employeeRepository.findAllNativeWithPagination(dept, name, pageable)
+                .map(this::convertToDto);
     }
 
     @Transactional
     public EmployeeDto create(EmployeeDto dto) {
         invalidateCache();
         Employee employee = new Employee();
-        mapDtoToEntity(employee, dto);
+        employee.setFirstName(dto.firstName());
+        employee.setLastName(dto.lastName());
+        EmployeeProfile profile = new EmployeeProfile();
+        profile.setBio(dto.bio());
+        profile.setPhoneNumber(dto.phoneNumber());
+        profile.setEmployee(employee);
+        employee.setProfile(profile);
+        if (dto.departmentId() != null) {
+            departmentRepository.findById(dto.departmentId()).ifPresent(employee::setDepartment);
+        }
         return convertToDto(employeeRepository.save(employee));
     }
 
@@ -77,9 +75,23 @@ public class EmployeeService {
     public EmployeeDto update(Long id, EmployeeDto dto) {
         invalidateCache();
         Employee employee = employeeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Сотрудник не найден"));
-        mapDtoToEntity(employee, dto);
-        return convertToDto(employeeRepository.save(employee));
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found: " + id));
+        employee.setFirstName(dto.firstName());
+        employee.setLastName(dto.lastName());
+        EmployeeProfile profile = employee.getProfile();
+        if (profile == null) {
+            profile = new EmployeeProfile();
+            profile.setEmployee(employee);
+            employee.setProfile(profile);
+        }
+        profile.setBio(dto.bio());
+        profile.setPhoneNumber(dto.phoneNumber());
+        if (dto.departmentId() != null) {
+            departmentRepository.findById(dto.departmentId()).ifPresent(employee::setDepartment);
+        } else {
+            employee.setDepartment(null);
+        }
+        return convertToDto(employee);
     }
 
     @Transactional
@@ -88,55 +100,29 @@ public class EmployeeService {
         employeeRepository.deleteById(id);
     }
 
+    @Transactional
+    public void createPartialWrite(EmployeeDto dto) {
+        Employee employee = new Employee();
+        employee.setFirstName(dto.firstName());
+        employee.setLastName(dto.lastName());
+        employeeRepository.save(employee);
+        throw new RuntimeException("Искусственная ошибка для проверки частичной записи");
+    }
+
     private void invalidateCache() {
-        log.info("Инвалидация кэша: данные были изменены.");
+        log.info("Инвалидация кэша: данные изменены, кэш очищен.");
         cache.clear();
     }
 
     private EmployeeDto convertToDto(Employee employee) {
         EmployeeProfile profile = employee.getProfile();
-        String bio = (profile != null) ? profile.getBio() : "Биография не заполнена";
-        String phone = (profile != null) ? profile.getPhoneNumber() : "Телефон не указан";
-
+        String bio = (profile != null) ? profile.getBio() : "Нет";
+        String phone = (profile != null) ? profile.getPhoneNumber() : "Нет";
         Long deptId = (employee.getDepartment() != null) ? employee.getDepartment().getId() : null;
-        String deptName = (employee.getDepartment() != null) ? employee.getDepartment().getName() : "Отдел не назначен";
-
+        String deptName = (employee.getDepartment() != null) ? employee.getDepartment().getName() : "Нет";
         List<Long> taskIds = (employee.getTasks() != null)
                 ? employee.getTasks().stream().map(Task::getId).collect(Collectors.toList())
                 : Collections.emptyList();
-
-        return new EmployeeDto(
-                employee.getId(),
-                employee.getFirstName(),
-                employee.getLastName(),
-                bio,
-                phone,
-                deptId,
-                deptName,
-                taskIds
-        );
-    }
-
-    private void mapDtoToEntity(Employee employee, EmployeeDto dto) {
-        employee.setFirstName(dto.firstName());
-        employee.setLastName(dto.lastName());
-
-        EmployeeProfile profile = employee.getProfile();
-        if (profile == null) {
-            profile = new EmployeeProfile();
-            employee.setProfile(profile);
-        }
-        profile.setBio(dto.bio());
-        profile.setPhoneNumber(dto.phoneNumber());
-
-        if (dto.departmentId() != null) {
-            departmentRepository.findById(dto.departmentId())
-                    .ifPresent(employee::setDepartment);
-        }
-
-        if (dto.taskIds() != null) {
-            List<Task> tasks = taskRepository.findAllById(dto.taskIds());
-            employee.setTasks(new HashSet<>(tasks));
-        }
+        return new EmployeeDto(employee.getId(), employee.getFirstName(), employee.getLastName(), bio, phone, deptId, deptName, taskIds);
     }
 }
