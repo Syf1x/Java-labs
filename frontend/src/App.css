@@ -1,0 +1,180 @@
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px 40px;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 0;
+  border-bottom: 1px solid #33333d;
+  margin-bottom: 24px;
+}
+
+.brand {
+  font-weight: 600;
+  margin-right: 12px;
+}
+
+.nav a {
+  color: #a9a9b3;
+  text-decoration: none;
+  padding: 6px 0;
+}
+
+.nav a.active {
+  color: #ffffff;
+  border-bottom: 2px solid #6c8cff;
+}
+
+.toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.toolbar input, .toolbar select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #3a3a44;
+  background: #1e1e24;
+  color: inherit;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+}
+
+th, td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid #2e2e36;
+  vertical-align: top;
+}
+
+th {
+  color: #a9a9b3;
+  font-weight: 500;
+  font-size: 0.9em;
+}
+
+button {
+  cursor: pointer;
+}
+
+.btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #3a3a44;
+  background: #26262e;
+  color: inherit;
+}
+
+.btn:hover {
+  background: #32323c;
+}
+
+.btn.primary {
+  background: #4f6ef7;
+  border-color: #4f6ef7;
+  color: white;
+}
+
+.btn.danger {
+  border-color: #b23b3b;
+  color: #ff8080;
+}
+
+.row-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.form-card {
+  border: 1px solid #33333d;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+  max-width: 500px;
+}
+
+.form-card h3 {
+  margin-top: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.field label {
+  font-size: 0.85em;
+  color: #a9a9b3;
+}
+
+.field input, .field select, .field textarea {
+  padding: 7px 10px;
+  border-radius: 6px;
+  border: 1px solid #3a3a44;
+  background: #1e1e24;
+  color: inherit;
+  font: inherit;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.error-banner {
+  background: #3a1e1e;
+  border: 1px solid #b23b3b;
+  color: #ffb3b3;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #2a2a33;
+  font-size: 0.8em;
+  margin: 2px 4px 2px 0;
+}
+
+.badge.removable {
+  cursor: pointer;
+}
+
+.section-title {
+  font-size: 1.3em;
+  margin-bottom: 16px;
+}
+
+.muted {
+  color: #8b8b96;
+  font-size: 0.9em;
+}
+
+.task-list {
+  margin: 0;
+  padding-left: 18px;
+}

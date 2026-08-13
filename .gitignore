@@ -12,3 +12,7 @@ logs/
 
 .env
 HELP.md
+
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/

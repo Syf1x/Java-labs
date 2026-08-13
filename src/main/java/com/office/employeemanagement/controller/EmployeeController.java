@@ -79,4 +79,16 @@ public class EmployeeController {
     public void delete(@PathVariable Long id) {
         employeeService.delete(id);
     }
+
+    @Operation(summary = "Назначить задачу сотруднику (связь ManyToMany)")
+    @PostMapping("/{id}/tasks/{taskId}")
+    public EmployeeDto assignTask(@PathVariable Long id, @PathVariable Long taskId) {
+        return employeeService.assignTask(id, taskId);
+    }
+
+    @Operation(summary = "Снять задачу с сотрудника")
+    @DeleteMapping("/{id}/tasks/{taskId}")
+    public EmployeeDto unassignTask(@PathVariable Long id, @PathVariable Long taskId) {
+        return employeeService.unassignTask(id, taskId);
+    }
 }

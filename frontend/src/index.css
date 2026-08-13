@@ -1,0 +1,31 @@
+:root {
+  --text: #cfcfd6;
+  --text-h: #f3f4f6;
+  --bg: #121216;
+  font: 15px/145% system-ui, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: dark;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+}
+
+#root {
+  min-height: 100svh;
+  box-sizing: border-box;
+}
+
+h1, h2, h3 {
+  color: var(--text-h);
+  font-weight: 600;
+}
+
+a {
+  color: inherit;
+}

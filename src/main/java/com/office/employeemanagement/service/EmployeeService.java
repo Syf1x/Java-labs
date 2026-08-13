@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -99,6 +100,31 @@ public class EmployeeService {
     public void delete(Long id) {
         invalidateCache();
         employeeRepository.deleteById(id);
+    }
+
+    @Transactional
+    public EmployeeDto assignTask(Long employeeId, Long taskId) {
+        invalidateCache();
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found: " + employeeId));
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found: " + taskId));
+        if (employee.getTasks() == null) {
+            employee.setTasks(new HashSet<>());
+        }
+        employee.getTasks().add(task);
+        return convertToDto(employeeRepository.save(employee));
+    }
+
+    @Transactional
+    public EmployeeDto unassignTask(Long employeeId, Long taskId) {
+        invalidateCache();
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found: " + employeeId));
+        if (employee.getTasks() != null) {
+            employee.getTasks().removeIf(task -> task.getId().equals(taskId));
+        }
+        return convertToDto(employeeRepository.save(employee));
     }
 
     public void createPartialWrite(EmployeeDto dto) {
